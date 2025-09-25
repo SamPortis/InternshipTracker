@@ -1,0 +1,111 @@
+﻿@page
+@model InternshipTracker.Pages.Applications.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Application Index</h1>
+
+<p>
+    <a class="btn btn-outline-primary" asp-page="Create">Create New</a>
+</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <form method="get">
+            <div class="input-group">
+                <input id="SearchTextBox" class="form-control" asp-for="SearchString" placeholder="Search" />
+            </div>
+        </form>
+    </div>
+</div>    
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Company
+            </th>
+            <th>
+                Role
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                OA?
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.InternshipApplications) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Company.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NeedToTakeOA)
+            </td>
+            <td>
+                <div class="list-inline">
+                    <div class="list-inline-item">
+                        <a class="btn btn-outline-warning" asp-page="./Edit" asp-route-id="@item.Id">Edit</a>
+                    </div>
+                    <div class="list-inline-item">
+                        <a class="btn btn-outline-info" asp-page="./Details" asp-route-id="@item.Id">Details</a>
+                    </div>
+                    <div class="list-inline-item">
+                        <form id="deleteForm" method="post" asp-page-handler="Delete" asp-route-id="@item.Id">
+                            <button type="submit" class="btn btn-outline-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                    @if (item.StatusId != 6)
+                    {
+                        <div class="list-inline-item">
+                            <form id="rejectedForm" method="post" asp-page-handler="SetRejected" asp-route-id="@item.Id">
+                                <button type="submit" class="btn btn-outline-dark">
+                                    Set as Rejected
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $('#SearchTextBox').change(function () {
+            $('form').submit();
+        });
+
+        $('#deleteForm').submit(function(event) {
+            event.preventDefault();
+            if (confirm('Are you sure you want to delete this?')) {
+                this.submit();
+            }
+        });
+
+        $('#rejectedForm').submit(function(event) {
+            event.preventDefault();
+            if (confirm('Are you sure you want to set this as rejected?')) {
+                this.submit();
+            }
+        });
+    </script>
+}

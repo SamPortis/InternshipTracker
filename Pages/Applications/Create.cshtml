@@ -1,0 +1,103 @@
+﻿@page
+@model InternshipTracker.Pages.Applications.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+<h1> Create new application </h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4" asp-validation-summary="All">
+        <form id="form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div id="companyContainer" class="form-group">
+                <label asp-for="InternshipApplication.CompanyId" class="control-label">Company</label>
+                <select id="company" asp-for="InternshipApplication.CompanyId" class ="form-control" asp-items="Model.Companies"></select>
+            </div>
+
+            <div class="form-group" id="hiddenTextBox">
+                <label asp-for="InternshipApplication.Company.Name" class="control-label">New Company</label>
+                <input id="newCompanyTextBox" type="text" asp-for="InternshipApplication.Company.Name" class="form-control" />
+                <span asp-validation-for="InternshipApplication.Company.Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="InternshipApplication.StatusId" class="control-label">Status</label>
+                <select asp-for="InternshipApplication.StatusId" class ="form-control" asp-items="Model.StatusList"></select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="InternshipApplication.Position" class="control-label">Position</label>
+                <input asp-for="InternshipApplication.Position" class="form-control" />
+                <span asp-validation-for="InternshipApplication.Position" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="InternshipApplication.Notes" class="control-label">Notes</label>
+                <input asp-for="InternshipApplication.Notes" class="form-control" />
+                <span asp-validation-for="InternshipApplication.Notes" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="InternshipApplication.NeedToTakeOA" /> @Html.DisplayNameFor(model => model.InternshipApplication.NeedToTakeOA)
+                </label>
+            </div>
+
+            <br/>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-outline-primary" />
+                <a class="btn btn-outline-secondary" asp-page="Index">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+@*
+
+Want to add an auto updating search bar
+Uses more jquerry to dynamically search for companies
+
+*@
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $('#form').submit(function(event) {
+            event.preventDefault();
+            var companyId = $('#company').val();
+            if (companyId == 1) {
+                var textBoxInput = $('#newCompanyTextBox').val().trim();
+                $.ajax({
+                        type: "POST",
+                        url: "/Applications/Create?handler=AddApplication",
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            window.location.href = "/Applications/Index";
+                        }
+                });
+            } else {
+                this.submit();
+            }
+        });
+
+        $(document).ready(function () {
+            $('#hiddenTextBox').hide();
+            var companyId = $('#company').val();
+            if (companyId == 1) {
+                $('#hiddenTextBox').show();
+            }
+        });
+
+        $('#company').change(function () {
+            var companyId = $('#company').val();
+            if (companyId == 1) {
+                $('#hiddenTextBox').show();
+            } else {
+                $('#hiddenTextBox').hide();
+            }
+        });
+
+    </script>
+}

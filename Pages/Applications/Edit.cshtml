@@ -1,0 +1,83 @@
+﻿@page
+@model InternshipTracker.Pages.Applications.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>InternshipApplication</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="InternshipApplication.CompanyId" class="control-label">Company</label>
+                <select id="company" asp-for="InternshipApplication.CompanyId" class="form-control" asp-items="@Model.Companies"></select>
+                <span asp-validation-for="InternshipApplication.CompanyId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group" id="hiddenTextBox">
+                <label asp-for="InternshipApplication.Company.Name" class="control-label">New Company</label>
+                <input id="newCompanyTextBox" type="text" asp-for="InternshipApplication.Company.Name" class="form-control" />
+                <span asp-validation-for="InternshipApplication.Company.Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="InternshipApplication.StatusId" class="control-label">Status</label>
+                <select asp-for="InternshipApplication.StatusId" class="form-control" asp-items="@Model.Statuses"></select>
+                <span asp-validation-for="InternshipApplication.StatusId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="InternshipApplication.Position" class="control-label"></label>
+                <input asp-for="InternshipApplication.Position" class="form-control" />
+                <span asp-validation-for="InternshipApplication.Position" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="InternshipApplication.Notes" class="control-label"></label>
+                <input asp-for="InternshipApplication.Notes" class="form-control" />
+                <span asp-validation-for="InternshipApplication.Notes" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="InternshipApplication.NeedToTakeOA" /> @Html.DisplayNameFor(model => model.InternshipApplication.NeedToTakeOA)
+                </label>
+            </div>
+
+            <input type="hidden" asp-for="InternshipApplication.Id" />
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-outline-primary" />
+                <a class="btn btn-outline-secondary" asp-page="./Index">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function () {
+            $('#hiddenTextBox').hide();
+            var companyId = $('#company').val();
+            if (companyId == 1) {
+                $('#hiddenTextBox').show();
+            }
+        });
+
+        $('#company').change(function () {
+            var companyId = $('#company').val();
+            if (companyId == 1) {
+                $('#hiddenTextBox').show();
+            } else {
+                $('#hiddenTextBox').hide();
+            }
+        });
+    </script>
+}

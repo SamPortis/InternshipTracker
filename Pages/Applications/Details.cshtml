@@ -1,0 +1,55 @@
+﻿@page
+@model InternshipTracker.Pages.Applications.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>InternshipApplication</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InternshipApplication.Company)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InternshipApplication.Company.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InternshipApplication.Status)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InternshipApplication.Status.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InternshipApplication.Position)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InternshipApplication.Position)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InternshipApplication.Notes)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InternshipApplication.Notes)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InternshipApplication.NeedToTakeOA)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InternshipApplication.NeedToTakeOA)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InternshipApplication.DateCreated)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InternshipApplication.DateCreated)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.InternshipApplication.Id">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>
