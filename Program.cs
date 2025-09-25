@@ -1,4 +1,4 @@
-using InternshipTracker.Data;
+﻿using InternshipTracker.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

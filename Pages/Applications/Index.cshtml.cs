@@ -43,6 +43,8 @@ namespace InternshipTracker.Pages.Applications
                     .Include(i => i.Company)
                     .Include(i => i.Status)
                     .ToListAsync();
+
+                SortApplications();
             } else
             {
                 IList<Company> companies = await _context.Companies.Where(i => i.Name.Contains(SearchString)).ToListAsync();
@@ -62,6 +64,8 @@ namespace InternshipTracker.Pages.Applications
                         InternshipApplications.AddRange(TempList);
                     }
                 }
+
+                SortApplications();
             }
         }
 
@@ -118,6 +122,13 @@ namespace InternshipTracker.Pages.Applications
                 return RedirectToPage("./Index");
             }
             return NotFound(); //shoudlnt get this far
+        }
+        
+        private void SortApplications()
+        {
+            InternshipApplications = InternshipApplications
+                .OrderBy(i => i.Company.Name) // Primary sort by StatusId
+                .ToList();
         }
     }
 }
