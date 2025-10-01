@@ -13,7 +13,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <form method="get">
+        <form id="searchForm" method="get">
             <div class="input-group">
                 <input id="SearchTextBox" class="form-control" asp-for="SearchString" placeholder="Search" />
             </div>
@@ -21,10 +21,36 @@
     </div>
 </div>    
 
+@* add select button operations *@
 
-<table class="table">
+<div class="row" id="selectOptionsContainer">
+    <div class="col-sm-8">
+        <form method="post" id="SelectOptionForm" class="">
+            @Html.AntiForgeryToken()
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <select asp-for="@Model.IndexSelectOptionId" asp-items="@Model.IndexSelectOptions" class="form-control" id="selectOptionString">
+                        <option>
+                            Choose an option
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary form-row">
+                        Apply
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table" id="itemTable">
     <thead>
         <tr>
+            <th>
+                Select
+            </th> 
             <th>
                 Company
             </th>
@@ -42,6 +68,12 @@
     <tbody>
 @foreach (var item in Model.InternshipApplications) {
         <tr>
+            <td>
+                <form id="selectForm">
+                    <input type="checkbox" class="item-checkbox" data-item-id="@item.Id" />
+                </form>
+            </td>
+
             <td>
                 @Html.DisplayFor(modelItem => item.Company.Name)
             </td>
@@ -90,8 +122,17 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        var selectedItemIds = [];
+        $(document).ready(function () {
+            if (selectedItemIds.length < 1) {
+                $('#selectOptionsContainer').hide();
+            } else {
+                $('#selectOptionsContainer').show();
+            }
+        });
+            
         $('#SearchTextBox').change(function () {
-            $('form').submit();
+            $('searchForm').submit();
         });
 
         $('#deleteForm').submit(function(event) {
@@ -107,5 +148,51 @@
                 this.submit();
             }
         });
+
+        //updates selectedIds on table change
+        $('#itemTable').on('change', '.item-checkbox', function () {
+            var itemId = $(this).data('item-id');
+            if ($(this).is(':checked')) {
+                if ($.inArray(itemId, selectedItemIds) === -1) {
+                        selectedItemIds.push(itemId);
+                    }
+            } else {
+                selectedItemIds = $.grep(selectedItemIds, function (value) {
+                    return value != itemId;
+                });
+            }
+            if (selectedItemIds < 1) {
+                $('#selectOptionsContainer').hide();
+            } else {
+                $('#selectOptionsContainer').show();
+            }
+        });
+
+        //handles the events for the apply button
+        $('#SelectOptionForm').submit(function (event) {
+            event.preventDefault();
+
+            var selectedOptionId = $('#selectOptionString').val();
+            var token = $('#SelectOptionForm input[name="__RequestVerificationToken"]').val();
+            console.log("Is string", jQuery.type(selectedOptionId));
+
+            if (selectedOptionId != 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Applications/Index?handler=SetIndexesToOption",
+                    data: { ids: selectedItemIds
+                        , selectedStatusId: selectedOptionId
+                        , __RequestVerificationToken: token  },  // sends as ids=1&ids=2&ids=3
+                    traditional: true,
+                    success: function (res) {
+                        window.location.href = "/Applications/Index";
+                    },
+                    error: function (xhr) {
+                        console.error("Error:", xhr.status, xhr.responseText);
+                    }
+                });
+            }
+        });
+
     </script>
 }

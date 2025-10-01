@@ -1,7 +1,9 @@
 ﻿using InternshipTracker.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using NuGet.Packaging;
 using NuGet.Protocol.Core.Types;
 using System;
@@ -35,8 +37,14 @@ namespace InternshipTracker.Pages.Applications
         [TempData]
         public int OldCompanyId { get; set; }
 
+        [BindProperty]
+        public int IndexSelectOptionId { get; set; }
+
+        public SelectList IndexSelectOptions { get; set; } = default!;
         public async Task OnGetAsync()
         {
+            IndexSelectOptions = new SelectList(await _context.Statuses.ToListAsync(), "Id", "Name");
+
             if (string.IsNullOrEmpty(SearchString))
             {
                 InternshipApplications = await _context.InternshipApplications
@@ -123,7 +131,31 @@ namespace InternshipTracker.Pages.Applications
             }
             return NotFound(); //shoudlnt get this far
         }
-        
+
+        public async Task<IActionResult> OnPostSetIndexesToOptionAsync(List<int> ids, string selectedStatusId) {
+            //Gets Id list but StatusOptionId is null when form is submitted
+            int statusId = int.Parse(selectedStatusId);
+            foreach (var id in ids)
+            {
+                var internshipApplication =  _context.InternshipApplications.Find(id);
+                if (internshipApplication != null)
+                {
+                    InternshipApplication = internshipApplication;
+                    InternshipApplication.StatusId = statusId; // Set status to selected option
+                    _context.Attach(InternshipApplication).State = EntityState.Modified;
+                } else
+                {
+                    return new JsonResult(new { success = false });
+                }
+            }
+            if (ids.Count > 0)
+            {
+                await _context.SaveChangesAsync();
+                return new JsonResult(new { success = true });
+            }
+            return new JsonResult(new { success = false });
+        }
+
         private void SortApplications()
         {
             InternshipApplications = InternshipApplications
